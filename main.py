@@ -30,7 +30,7 @@ def main():
     ])
 
     http_server = tornado.httpserver.HTTPServer(application)
-    port = 5000
+    port = int(os.environ.get("PORT", 5000))
     http_server.listen(port)
     tornado.ioloop.IOLoop.instance().start()
 
