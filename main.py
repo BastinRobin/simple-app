@@ -1,13 +1,20 @@
 import os
+import json
+import datetime
+import psycopg2
+import psycopg2.extras
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 
 
+conn = psycopg2.connect( database="todo", user="", password="", host="localhost", port=5432)
+cur = conn.cursor()
+
+
 class MainHandler(tornado.web.RequestHandler):
 
     def get(self):
-        # self.write("Hello World")
         self.render('index.html')
 
 
@@ -21,6 +28,22 @@ class ContactHandler(tornado.web.RequestHandler):
 
     def get(self):
         self.render('contact.html')
+
+
+    def post(self):
+
+        name = self.get_argument('name')
+        email = self.get_argument('email')
+        message = self.get_argument('message')
+        created = datetime.datetime.now()
+
+        query = "INSERT INTO contact (name, email, message, created_on) VALUES (%s, %s, %s, %s)"
+        cur.execute(query, (name, email, message, created))
+        conn.commit()
+
+        self.write('Submitted successfully')
+
+
 
 
 def main():
